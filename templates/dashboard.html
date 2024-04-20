@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Manage Your Invoice</h1>
+    <div>
+        <h2>Invoices</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Invoice Date</th>
+                    <th>Date Due</th>
+                    <th>Client ID</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr>
+                    <td>{{ invoice.invoice_number }}</td>
+                    <td>{{ invoice.invoice_date }}</td>
+                    <td>{{ invoice.date_due }}</td>
+                    <td>{{ invoice.client_id }}</td>
+                    <td>{{ invoice.address }}</td>
+                    <td>
+                        <form method="POST" action="/dashboard">
+                            <input type="hidden" name="invoice_id" value="{{ invoice.invoice_id }}">
+                                <select  name="status">
+                                    <option value="Pending" {% if invoice.status == 'Pending' %} selected {% endif %}>Pending</option>
+                                    <option value="Paid" {% if invoice.status == 'Paid' %} selected {% endif %}>Paid</option>
+                                    <option value="Sent" {% if invoice.status == 'Sent' %} selected {% endif %}>Sent</option>
+                                </select>
+                            <button type="submit">Update Status</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="/invoice_details/{{ invoice.invoice_id }}">View Invoice</a>
+                    </td>
+                    <td>
+                        <a href="/invoices/{{ invoice.invoice_id }}/sent">Sent</a>
+                    </td>
+                    <td>
+                        <a href="/print_invoices/{{ invoice.invoice_id }}">Download</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+        <button type="button" onclick="window.location.href='/invoices/new'">Create New Invoice</button>
+    </div>
+</body>
+</html>

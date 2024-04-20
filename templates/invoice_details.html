@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Details</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Invoice Details</h2>
+    <table>
+        <tr>
+            <th>Invoice ID</th>
+            <th>User ID</th>
+            <th>Invoice Number</th>
+            <th>Invoice Date</th>
+            <th>Date Due</th>
+            <th>Date Sent</th>
+            <th>Date Paid</th>
+            <th>Status</th>
+            <th>Invoice Address</th>
+            <th>Client ID</th>
+            <th>Client Name</th>
+            <th>Client Email</th>
+            <th>Client Phone</th>
+        </tr>
+        <tr>
+            <td>{{ invoice_data['invoice_id'] }}</td>
+            <td>{{ invoice_data['user_id'] }}</td>
+            <td>{{ invoice_data['invoice_number'] }}</td>
+            <td>{{ invoice_data['invoice_date'] }}</td>
+            <td>{{ invoice_data['date_due'] }}</td>
+            <td>{{ invoice_data['date_sent'] }}</td>
+            <td>{{ invoice_data['date_paid'] }}</td>
+            <td>{{ invoice_data['status'] }}</td>
+            <td>{{ invoice_data['invoice_address'] }}</td>
+            <td>{{ invoice_data['client_id'] }}</td>
+            <td>{{ invoice_data['client_name'] }}</td>
+            <td>{{ invoice_data['client_email'] }}</td>
+            <td>{{ invoice_data['client_phone'] }}</td>
+        </tr>
+    </table>
+</body>
+</html>
