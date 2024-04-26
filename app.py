@@ -1,38 +1,18 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, jsonify
 from models import User, Invoice, Client, Activity
-
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
+import config
 
 from util.createPdf import invoice_to_pdf
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'mysecretkey'
+app.config['SECRET_KEY'] = config.SECRET_KEY
 
 
 @app.route('/')
 def index():
-    
-    
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        user = User.find_by_username(username)
-
-        if user and user.check_password(password):
-            flash('Logged in successfully')
-            session['user_id'] = user.user_id
-            session['username'] = user.username
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Invalid credentials')
-            return redirect(url_for('login'))
-
-    return render_template('/index.html')
+    if 'username' in session:
+        return redirect(url_for('dashboard'))
+    return render_template('index.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -53,6 +33,12 @@ def login():
             return redirect(url_for('login'))
 
     return render_template('login.html')
+
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('index'))
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -110,6 +96,7 @@ def new_invoice():
         date = request.form['date']
         address = request.form['address']
         client_id = request.form['client_id']
+        style = request.form['style']
 
         # find the last invoice number
         last_invoice = Invoice.find_last_invoice(user_id)
