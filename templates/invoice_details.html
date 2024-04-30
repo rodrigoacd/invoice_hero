@@ -1,59 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Details</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
+{% extends 'template.html' %}
+
+{% block title %}Invoice{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="p-4 text-center" style="margin-top: 50px;"> Invoice Details</h1>
+        <h2 class="mb-3 fw-normal text-center">{{ invoice_data.client_name }}</h2>
+        <h4 class="mb-3 fw-normal text-center">{{ invoice_data.client_email }}</h4>
+        <h4 class="mb-3 fw-normal text-center">{{ invoice_data.client_phone }}</h4>
+        <h4 class="mb-3 fw-normal text-center">{{ invoice_data.client_address }}</h4>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-20">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Invoice Number</th>
+                                <th scope="col">Invoice Date</th>
+                                <th scope="col">Date Due</th>
+                                <th scope="col">Date Sent</th>
+                                <th scope="col">Date Paid</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ invoice_data.invoice_number }}</td>
+                                <td>{{ invoice_data.invoice_date }}</td>
+                                <td>{{ invoice_data.date_due }}</td>
+                                <td>{{ invoice_data.date_sent }}</td>
+                                <td>{{ invoice_data.date_paid }}</td>
+                                <td>{{ invoice_data.status }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-20">
+                <div class="table-responsive">
+                    <table class="table" id="itemTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Item or Service</th>
+                                <th scope="col">Hours / Quantity</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Rate</th>
+                                <th scope="col">Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in item_data %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.hours }}</td>
+                                    <td>{{ item.date }}</td>
+                                    <td>{{ item.rate }}</td>
+                                    <td>{{ item.address }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>        
+    </div>
+
+    <script>
+        // Function to format date
+        function format_date(dateString) {
+            var date = new Date(dateString);
+            var formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            return formattedDate;
         }
 
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
+        // Apply date formatting to date columns
+        document.querySelectorAll('.date-column').forEach(function(element) {
+            element.textContent = format_date(element.textContent);
+        });
 
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
-<body>
-    <h2>Invoice Details</h2>
-    <table>
-        <tr>
-            <th>Invoice ID</th>
-            <th>User ID</th>
-            <th>Invoice Number</th>
-            <th>Invoice Date</th>
-            <th>Date Due</th>
-            <th>Date Sent</th>
-            <th>Date Paid</th>
-            <th>Status</th>
-            <th>Invoice Address</th>
-            <th>Client ID</th>
-            <th>Client Name</th>
-            <th>Client Email</th>
-            <th>Client Phone</th>
-        </tr>
-        <tr>
-            <td>{{ invoice_data['invoice_id'] }}</td>
-            <td>{{ invoice_data['user_id'] }}</td>
-            <td>{{ invoice_data['invoice_number'] }}</td>
-            <td>{{ invoice_data['invoice_date'] }}</td>
-            <td>{{ invoice_data['date_due'] }}</td>
-            <td>{{ invoice_data['date_sent'] }}</td>
-            <td>{{ invoice_data['date_paid'] }}</td>
-            <td>{{ invoice_data['status'] }}</td>
-            <td>{{ invoice_data['invoice_address'] }}</td>
-            <td>{{ invoice_data['client_id'] }}</td>
-            <td>{{ invoice_data['client_name'] }}</td>
-            <td>{{ invoice_data['client_email'] }}</td>
-            <td>{{ invoice_data['client_phone'] }}</td>
-        </tr>
-    </table>
-</body>
-</html>
+        // Initialize DataTable
+        $(document).ready(function() {
+            $('#itemTable').DataTable();
+        });
+    </script>
+{% endblock %}

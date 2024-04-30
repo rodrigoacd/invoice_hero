@@ -128,7 +128,7 @@ class Invoice:
         self.status = status
 
     @classmethod
-    def create(cls, invoice_number, user_id, client_id, address):
+    def create(cls, invoice_number, user_id, client_id):
         
         """
         Creates a new invoice in the database.
@@ -149,8 +149,8 @@ class Invoice:
             cursor = connection.cursor()
 
             cursor.execute(
-                "INSERT INTO invoices (user_id, invoice_number, invoice_date, date_due, status, address,client_id ) VALUES (%s, %s, now(), DATE(DATE_ADD(now(), INTERVAL 30 DAY)), 'created', %s, %s)",
-                (user_id, invoice_number, address, client_id)
+                "INSERT INTO invoices (user_id, invoice_number, invoice_date, date_due, status, address, client_id ) VALUES (%s, %s, now(), DATE(DATE_ADD(now(), INTERVAL 30 DAY)), 'created',%s, %s)",
+                (user_id, invoice_number, "none", client_id)
             )
 
             connection.commit()
@@ -273,35 +273,7 @@ class Invoice:
             else:
                 print('Invalid')
                 return None
-            # result = cursor.fetchone()
-            # if result:
-            #     return {
-            #         'invoice_id': result[0],
-            #         'user_id': result[1],
-            #         'invoice_number': result[2],
-            #         'invoice_date': result[3],
-            #         'date_due': result[4],
-            #         'date_sent': result[5],
-            #         'date_paid': result[6],
-            #         'status': result[7],
-            #         'invoice_address': result[8],
-            #         'client_id': result[9],
-            #         'client_name': result[10],
-            #         'client_email': result[11],
-            #         'client_phone': result[12],
-            #         'username': result[13],
-            #         'email': result[14],
-            #         'user_phone': result[15],
-            #         'abn': result[16],
-            #         'bank': result[17],
-            #         'account_name': result[18],
-            #         'bsb': result[19],
-            #         'account_number': result[20],
-
-            #     }
-            # else:
-            #     print ('Invalid')
-            #     return None
+    
         except Exception as e:
             print(f"Error finding invoice by ID: {e}")
             return None
@@ -359,19 +331,43 @@ class Invoice:
             cursor = connection.cursor()
 
             cursor.execute(
-                "SELECT id, user_id, invoice_number, invoice_date, date_due, client_id, address, status  FROM invoices WHERE user_id = %s ORDER BY id DESC ",
+                """
+                With totalPrice as(
+                    SELECT invoice_id, CAST(sum(quantity * rate) AS INT) total FROM invoice_items GROUP BY invoice_id
+                )
+                SELECT 
+                    i.id, i.user_id, i.invoice_number, i.invoice_date, i.date_due, i.client_id, i.address, i.status,
+                    c.client_email, c.client_name, c.client_phone, c.client_address, t.total
+                FROM 
+                    invoices i
+                INNER JOIN 
+                    client c
+                ON 
+                    c.id = i.client_id
+                INNER JOIN 
+                    totalPrice t
+                ON 
+                    t.invoice_id = i.id
+                WHERE 
+                    i.user_id = %s 
+                ORDER BY id DESC                 
+                """,
                 (user_id,)
             )
             results = cursor.fetchall()
 
-            invoices = []
-            for result in results:
-                invoice = cls(*result)
-                invoices.append(invoice)
-
-            return invoices
+            if results:
+                columns = [desc[0] for desc in cursor.description]
+                items_by_group = []
+                for row in results:
+                    group_data = {column: value for column, value in zip(columns, row)}
+                    items_by_group.append(group_data)
+                return items_by_group
+            else:
+                print('No activities by group')
+                return []
         except Exception as e:
-            print(f"Error finding all clients: {e}")
+            print(f"Error finding all invoices with details: {e}")
             return None
         finally:
             if connection:
@@ -408,15 +404,17 @@ class Invoice:
 
 class Activity:
 
-    def __init__(self, activity_id, activity, date, hours, rate):
+    def __init__(self, activity_id, invoice_id, name, hours, date, rate, address=None):
         self.activity_id = activity_id
-        self.activity = activity
+        self.invoice_id = invoice_id
+        self.name = name
         self.date = date
         self.hours = hours
         self.rate = rate
+        self.address = address
 
     @classmethod
-    def create(cls, invoice_id, activity, date, hours, rate):
+    def create(cls, invoice_id, activity, date, hours, rate, address):
         """
         Creates a new activity in the database.
 
@@ -438,8 +436,8 @@ class Activity:
             cursor = connection.cursor()
 
             cursor.execute(
-                "INSERT INTO invoice_items (invoice_id, item_name, quantity, date, rate) VALUES (%s, %s, %s, %s, %s)",
-                (invoice_id, activity,  hours, date, rate)
+                "INSERT INTO invoice_items (invoice_id, item_name, quantity, date, rate, address) VALUES (%s, %s, %s, %s, %s, %s)",
+                (invoice_id, activity,  hours, date, rate, address)
             )
             connection.commit()
 
@@ -453,6 +451,47 @@ class Activity:
                 connection.close()
 
 
+    @classmethod
+    def find_by_invoice(cls, invoice_id):
+        """
+        Finds all activities by id
+
+        Args:
+            username: The username of the user to find.
+
+        Returns:
+            The user object if found, otherwise None.
+        """
+        try:
+            connection = connect_to_mysql()
+            if not connection:
+                return None
+
+            cursor = connection.cursor()
+
+            cursor.execute(
+                """ SELECT 
+                        id as activity_id, invoice_id, item_name as name,
+                        quantity as hours, CAST(date AS DATE), rate, address  
+                        FROM invoice_items 
+                        WHERE invoice_id = %s""",
+                (invoice_id,)
+            )
+            results = cursor.fetchall()
+
+            activities = []
+            for result in results:
+                activity = cls(*result)
+                activities.append(activity)
+                print(activity.name)
+            return activities
+        
+        except Exception as e:
+            print(f"Error finding activities by invoice_id: {e}")
+            return None
+        finally:
+            if connection:
+                connection.close()
 
 class Client:
 
@@ -534,3 +573,6 @@ class Client:
         finally:
             if connection:
                 connection.close()
+
+
+

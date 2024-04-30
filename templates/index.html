@@ -1,21 +1,88 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Invoice Hero</title>
-</head>
+{% extends 'template_out.html' %}
+
+{% block title %}login{% endblock %}
+
+{% block content %}
+
 <body>
-  <h1>Invoice Hero</h1>
-  <p>Welcome to Invoice Hero, the best way to manage your invoices.</p>
-    <form action="/login" method="POST">
-      <label for="username">Username:</label>
-      <input type="text" name="username" id="username">
-      <br>
-      <label for="password">Password:</label>
-      <input type="password" name="password" id="password">
-      <br>
-      <input type="submit" value="Log In">
-    </form>
-  <br>
-  <a href="/signup">Sign up</a> to get started.
-</body>
-</html>
+    <!-- Nav bar start -->
+    <nav class="navbar bg-body-tertiary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Invoice Hero</a>
+
+            <!-- Login and register dropdown -->
+            <div class="dropdown text-end d-flex justify-content-between align-items-center">
+                <button class="btn btn-link link-body-emphasis" type="button">Register</button>
+                <button class="btn btn-primary dropdown-toggle" type="button" id="profileDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                    Login
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdownMenu">
+                    <form class="px-4 py-3">
+                        <div class="mb-3">
+                            <label for="DropdownFormEmail1" class="form-label">Email address</label>
+                            <input type="text" class="form-control" name="username" id="username" placeholder="email@example.com">
+                        </div>
+                        <div class="mb-3">
+                            <label for="DropdownFormPassword1" class="form-label">Password</label>
+                            <input type="password" class="form-control" name="password" id="username" placeholder="Password">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="dropdownCheck">
+                                <label class="form-check-label" for="dropdownCheck">
+                                    Remember me
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" value="Log In">Sign in</button>
+                    </form>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">New around here? Sign up</a>
+                    <a class="dropdown-item" href="#">Forgot password?</a>
+                </ul>
+                
+            </div>
+        </div>
+    </nav>
+
+<div class="container">
+    <main class="form-signin">
+        <h1 class="p-4 text-center" style="color:rgb(6, 45, 221);">Invoice Hero</h1>
+        <form action="/login" method="POST">
+            
+            <h2 class="mb-3 fw-normal">Please Sign In</h2>
+
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="username" id="username" placeholder="Email" required>
+                <label for="username">Email address</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                <label for="password">Password</label>
+            </div>
+
+            <div class="form-check text-start my-3">
+                <input class="form-check-input" type="checkbox" value="remember-me" id="remember me">
+                <label class="form-check-label" for="remember me">
+                    Remember me
+                </label>
+            </div>
+            <span style="color: rgb(90, 89, 87);"> New around here? </span>
+                <a class="icon-link icon-link-hover" href="#" data-bs-toggle="modal" data-bs-target="#Addnewclient">
+                    Sign up
+                    <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
+                </a>
+                <br>
+                <span style="color: rgb(90, 89, 87);"> Forgot </span>
+                <a class="icon-link icon-link-hover" href="#" data-bs-toggle="modal" data-bs-target="#Addnewclient">
+                    Password?
+                    <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
+                </a>
+            <br><br>
+            <button class="btn btn-primary w-100 py-2" type="submit" value="Log In">Sign in</button>
+            <p class="mt-5 mb-3 text-body-secondary"> &copy; Invoice Hero 2024</p>
+        </form>
+    </main>
+</div>
+
+{% endblock %}

@@ -1,66 +1,250 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Manage Your Invoice</h1>
-    <div>
-        <h2>Invoices</h2>
-        <form method="POST" action="/logout">
-            <button type="submit">Logout</button>
-        </form>
+{% extends 'template.html' %}
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Number</th>
-                    <th>Invoice Date</th>
-                    <th>Date Due</th>
-                    <th>Client ID</th>
-                    <th>Address</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for invoice in invoices %}
-                <tr>
-                    <td>{{ invoice.invoice_number }}</td>
-                    <td>{{ invoice.invoice_date }}</td>
-                    <td>{{ invoice.date_due }}</td>
-                    <td>{{ invoice.client_id }}</td>
-                    <td>{{ invoice.address }}</td>
-                    <td>
-                        <form method="POST" action="/dashboard">
-                            <input type="hidden" name="invoice_id" value="{{ invoice.invoice_id }}">
-                                <select  name="status">
-                                    <option value="Pending" {% if invoice.status == 'Pending' %} selected {% endif %}>Pending</option>
-                                    <option value="Paid" {% if invoice.status == 'Paid' %} selected {% endif %}>Paid</option>
-                                    <option value="Sent" {% if invoice.status == 'Sent' %} selected {% endif %}>Sent</option>
-                                </select>
-                            <button type="submit">Update Status</button>
-                        </form>
-                    </td>
-                    <td>
-                        <a href="/invoice_details/{{ invoice.invoice_id }}">View Invoice</a>
-                    </td>
-                    <td>
-                        <a href="/invoices/{{ invoice.invoice_id }}/sent">Sent</a>
-                    </td>
-                    <td>
-                        <a href="/print_invoices/{{ invoice.invoice_id }}">Download</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            
-            </tbody>
-        </table>
+{% block title %}Invoice{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <h1 style="margin-top: 60px; display: flex; justify-content: space-between;">
+            Manage Your Invoice
+            <div style="margin-left: auto;">
+                <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#Addnewinvoice">
+                    Create New Invoice</button>
+                <!-- Add client trigger modal -->
+                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#Addnewclient">
+                    Create New Client
+                </button>
+            </div>
+        </h1>
+    </div>
+    
+    <!-- Add New invoice modal -->
+    <div class="modal fade" id="Addnewinvoice" tabindex="-1" aria-labelledby="Addnewinvoice" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="Addnewinvoice">Create New invoice</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/invoices/new" method="POST">
+                        <label for="client_id">Client:</label>
+                        <select class="form-select" name="client_id">
+                            {% for client in clients %}
+                            <option value="{{ client.id }}" {% if client.id == client_id %}selected{% endif %}>{{ client.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <span style="color: rgb(90, 89, 87);"> you don't find your client, click </span>
+                        <a class="icon-link icon-link-hover" href="#" data-bs-toggle="modal" data-bs-target="#Addnewclient">
+                            Add New client
+                            <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
+                        </a>
+                        <br>
+
+                        <!-- Separator and message for adding items -->
+                        <hr>
+                        <p>Please add items to your invoice:</p>
+
+                        <!-- Container for invoice items -->
+                        <div id="invoiceItems">
+                            <!-- First set of fields for an item -->
+                            <div class="mb-3">
+                                <label for="address1" class="col-form-label">Activity Address:</label>
+                                <textarea class="form-control" name="address1"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="date1" class="col-form-label">Date:</label>
+                                <input type="date" class="form-control" name="date1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="activity1" class="col-form-label">Item Name:</label>
+                                <input type="text" class="form-control" name="activity1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="hours1" class="col-form-label">Hours/QTY:</label>
+                                <input type="number" class="form-control" name="hours1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="rate1" class="col-form-label">Rate:</label>
+                                <input type="number" class="form-control" name="rate1">
+                            </div>
+                        </div>
+
+                        <!-- Button to add more items -->
+                        <button type="button" class="btn btn-primary" id="addItemBtn">Add More Items</button>
+                        
+                        
+                        <!-- Fields for submitting the invoice -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" value="Create" class="btn btn-primary">Create Invoice</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div>
-        <button type="button" onclick="window.location.href='/invoices/new'">Create New Invoice</button>
+    <!-- Add client modal -->
+    <div class="modal fade" id="Addnewclient" tabindex="-1" aria-labelledby="Addnewclient" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="Addnewclient">Create New client</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/clients/new" method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="col-form-label">Name:</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="col-form-label">Email:</label>
+                            <input type="text" class="form-control" name="email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="col-form-label">Phone</label>
+                            <input type="number" class="form-control" name="phone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="col-form-label">Address:</label>
+                            <textarea class="form-control" name="address"></textarea>
+                        </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" value="Create" class="btn btn-primary">Create Client</button>
+                        </div>
+                    </form>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+
+    <!-- Table start -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-20">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">No.</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Client</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-group-divider">
+                            <div class="invisible">{% for invoice in invoices %}</div>
+                            <tr>
+                                <td><a href="/invoice_details/{{ invoice.id }}">{{ invoice.invoice_number }}</a></td>
+                                <td>{{ invoice.invoice_date }}</td>
+                                <td>{{ invoice.client_name }}</td>
+                                <td>{{ invoice.total }}</td>
+                                <td>
+                                    <form id="statusForm" method="POST" action="/dashboard">
+                                        <input type="hidden" id="invoiceId" name="invoice_id" value="{{ invoice.invoice_id }}">
+
+                                        <select id="statusSelect" name="status" onchange="submitForm()">
+                                            <option value="Pending" {% if invoice.status == 'Pending' %} selected {% endif %}>Pending</option>
+                                            <option value="Paid" {% if invoice.status == 'Paid' %} selected {% endif %}>Paid</option>
+                                            <option value="Sent" {% if invoice.status == 'Sent' %} selected {% endif %}>Sent</option>
+                                        </select>
+                                    </form>
+                                    
+                                    <script>
+                                        // Script for auto submit in dropbox
+                                        function submitForm() {
+                                            document.getElementById("statusForm").submit();
+                                        }
+                                    </script>
+                                </td>
+                                <td>
+                                    <!-- Button including loading animation -->
+                                    <span id="sentLoadingIndicator" style="display: none;">
+                                        <div class="spinner-border text-success" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </span>
+                                    <a href="/invoices/{{ invoice.invoice_id }}/sent" class="btn btn-outline-success" onclick="showSentLoadingIndicator()">Sent</a>
+                                </td>
+                                <td>
+                                    <span id="downloadLoadingIndicator" style="display: none;">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </span>
+                                    <a href="/print_invoices/{{ invoice.invoice_id }}" class="btn btn-outline-primary" onclick="showDownloadLoadingIndicator()">Download</a>
+                                </td>
+                                <td>
+                                    <span id="deleteLoadingIndicator" style="display: none;">
+                                        <div class="spinner-border text-danger" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </span>
+                                    <a href="/delete" class="btn btn-outline-danger" onclick="showDeleteLoadingIndicator()">Delete</a>
+                                </td>
+                            </tr>
+                            <div class="invisible">{% endfor %}</div>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>        
+    </div>
+
+    <script>
+        // Function to show loading while loading or sending information
+        function showSentLoadingIndicator() {
+            document.getElementById("sentLoadingIndicator").style.display = "inline-block";
+        }
+
+        function showDownloadLoadingIndicator() {
+            document.getElementById("downloadLoadingIndicator").style.display = "inline-block";
+        }
+
+        function showDeleteLoadingIndicator() {
+            document.getElementById("deleteLoadingIndicator").style.display = "inline-block";
+        }
+    </script>
+    <!-- JavaScript function to add invoice items dynamically -->
+    <script>
+        // Counter to keep track of the number of added invoice items
+        let itemCount = 1;
+
+        // Function to add a new set of invoice fields
+        function addInvoiceItem() {
+            itemCount++; // Increment the counter
+            const newItemHtml = `
+                <hr>                
+                <div class="mb-3">
+                    <label for="address${itemCount}" class="col-form-label">Activity Address:</label>
+                    <textarea class="form-control" name="address${itemCount}"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="date${itemCount}" class="col-form-label">Date:</label>
+                    <input type="date" class="form-control" name="date${itemCount}">
+                </div>
+                <div class="mb-3">
+                    <label for="activity${itemCount}" class="col-form-label">Item Name:</label>
+                    <input type="text" class="form-control" name="activity${itemCount}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="hours${itemCount}" class="col-form-label">Hours/QTY:</label>
+                    <input type="number" class="form-control" name="hours${itemCount}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="rate${itemCount}" class="col-form-label">Rate:</label>
+                    <input type="number" class="form-control" name="rate${itemCount}" required>
+                </div>
+                </hr>
+            `;
+            document.getElementById('invoiceItems').innerHTML += newItemHtml;
+        }
+
+        // Assign the addInvoiceItem function to the click event of the addItemBtn button
+        document.getElementById('addItemBtn').addEventListener('click', addInvoiceItem);
+    </script>
+{% endblock %}

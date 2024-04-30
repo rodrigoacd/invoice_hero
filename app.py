@@ -35,7 +35,7 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/logout', methods=['POST'])
+@app.route('/logout', methods=['GET'])
 def logout():
     session.pop('username', None)
     return redirect(url_for('index'))
@@ -71,55 +71,62 @@ def signup():
 def dashboard():
     # user = User.get_current_user()
     user = session['user_id']
-    invoices = Invoice.get_all_invoices(user)
-    print(f"Print username {invoices}")
+    if request.method == 'GET':
+        invoices = Invoice.get_all_invoices(user)
+        
+        # Get all clients 
+        # TODO: get all user clients (not all because the list needs to be by each user)
 
-    return render_template('dashboard.html', invoices=invoices)
+        clients = Client.all()
+        print(f"{clients}")
+
+
+    return render_template('dashboard.html', invoices=invoices, clients=clients)
 
 
 @app.route('/invoices/new', methods=['GET', 'POST'])
 def new_invoice():
-    if request.method == 'GET':
-        clients = Client.all()
-        print(f"{clients}")
-        return render_template('invoice.html', clients=clients)
+    # if request.method == 'GET':
+    #     clients = Client.all()
+    #     print(f"{clients}")
+    #     return render_template('invoice.html', clients=clients)
     
     if request.method == 'POST':
         user_id = session['user_id']
 
-        
-        # Get the form data
-
-        activity = request.form['activity']
-        hours = request.form['hours']
-        rate = request.form['rate']
-        date = request.form['date']
-        address = request.form['address']
+        # Get client_id
         client_id = request.form['client_id']
-        style = request.form['style']
-
-        # find the last invoice number
+        # Get the current invoice number
         last_invoice = Invoice.find_last_invoice(user_id)
-        print(f"Print invoice number: {last_invoice['invoice_number']}")
-        print(f"Print user_id: {user_id}")
 
-        
         if last_invoice == None:
             invoice_number = 1
         else:
             invoice_number = int(last_invoice['invoice_number']) + 1
 
         # Create an invoice object and save it to the database
-        invoice = Invoice.create( invoice_number, user_id, client_id, address)
+        invoice_id = Invoice.create( invoice_number, user_id, client_id)  
 
-        # Save the invoice activities to the database
-        # todo: create many activities
-        print(f"Imprimient {invoice, activity, date, hours, rate}")
-        activity = Activity.create(invoice, activity, date, hours, rate )
+
+        for key, value in request.form.items():
+            if key.startswith('address') and value:
+                # Obtener el número del artículo del nombre del campo
+                item_number = key.replace('address', '')
+                
+                # Obtener los valores relacionados con este artículo
+                item_address = request.form[f'address{item_number}']
+                item_date = request.form[f'date{item_number}']
+                item_activity = request.form[f'activity{item_number}']
+                item_hours = request.form[f'hours{item_number}']
+                item_rate = request.form[f'rate{item_number}']
+                
+               
+                # Save the activities of the invoice
+                activity = Activity.create(invoice_id, item_activity, item_date, item_hours, item_rate, item_address)
 
         # Redirect to the dashboard)
 
-        if invoice:
+        if invoice_id:
             flash('Invoice created successfully')
             return redirect(url_for('dashboard'))
         else:
@@ -145,10 +152,15 @@ def new_client():
 
     return render_template('new_client.html')
 
+
+
 @app.route('/invoice_details/<int:invoice_id>')
 def invoice_details(invoice_id):
-    invoice_data = Invoice.find_by_id(invoice_id)
-    return render_template('invoice_details.html', invoice_data=invoice_data)
+    if request.method == 'GET':
+        invoice_data = Invoice.find_by_id(invoice_id)
+        item_data = Activity.find_by_invoice(invoice_id)
+        return render_template('invoice_details.html', invoice_data=invoice_data, item_data=item_data)
+
 
 
 @app.route('/print_invoices/<int:invoice_id>')
