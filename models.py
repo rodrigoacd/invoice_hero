@@ -5,29 +5,26 @@ from flask import session
 
 class User:
 
-    def __init__(self,user_id, username, password, email = None, phone = None, abn = None, bank = None, account_name = None, bsb = None, account_number = None):
+    def __init__(self,user_id, name, lastname, email, password,  address = None, phone = None, abn = None, bank = None, account_name = None, bsb = None, account_number = None):
         self.user_id = user_id
-        self.username = username
+        self.name = name
+        self.lastname = lastname
         self.password = password
         self.email = email
         self.phone = phone
+        self.address = address
         self.abn = abn
         self.bank = bank
         self.account_name = account_name
         self.bsb = bsb
         self.account_number = account_number
 
-
+#         print()
 
     @classmethod
-    def create(cls, username, password, email, phone, abn, bank, account_name, bsb, account_number):
+    def create(cls, name, lastname,  email, password, phone):
         """
         Creates a new user in the database.
-
-        Args:
-            username: The username of the new user.
-            password: The password of the new user.
-
         Returns:
             The newly created user object, or None if creation failed.
         """
@@ -41,15 +38,14 @@ class User:
             hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
             cursor.execute(
-                "INSERT INTO users (username, password, email, phone, abn, bank, account_name, bsb, account_number ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (username, hashed_password, email, phone, abn, bank, account_name, bsb, account_number)
+                "INSERT INTO users (name, lastname, password, email, phone) VALUES (%s, %s, %s, %s, %s)",
+                (name, lastname, hashed_password, email, phone)
             )
             connection.commit()
             
             user_id = cursor.lastrowid
-            
 
-            user = cls(user_id, username, hashed_password)
+            user = cls(user_id, name, lastname, email, hashed_password)
             return user
         except Exception as e:
             print(f"Error creating user: {e}")
@@ -59,12 +55,12 @@ class User:
                 connection.close()
 
     @classmethod
-    def find_by_username(cls, username):
+    def find_by_email(cls, email):
         """
-        Finds a user by their username.
+        Finds a user by their email.
 
         Args:
-            username: The username of the user to find.
+            email: string
 
         Returns:
             The user object if found, otherwise None.
@@ -77,22 +73,47 @@ class User:
             cursor = connection.cursor()
 
             cursor.execute(
-                "SELECT * FROM users WHERE username = %s",
-                (username,)
+                "SELECT id as user_id, name, lastname, email, password, address, phone, abn, bank, account_name, bsb, account_number  FROM users WHERE email = %s",
+                (email,)
             )
             result = cursor.fetchone()
-            print(result)
+
             if result:
                 user = cls(*result)
                 return user
             else:
                 return None
         except Exception as e:
-            print(f"Error finding user by username: {e}")
+            print(f"Error finding user by email: {e}")
             return None
         finally:
             if connection:
                 connection.close()
+
+
+    def update_user_info(user_id, updated_name, updated_lastname, updated_email, updated_phone, updated_address, updated_abn, updated_bank, updated_account_name, updated_bsb, update_account_number):
+        try:
+            connection = connect_to_mysql()
+            if not connection:
+                return False  # Or raise an exception
+
+            cursor = connection.cursor()
+            cursor.execute(
+                "UPDATE users SET name = %s, lastname = %s, email= %s, phone = %s, address = %s, abn = %s, bank = %s, account_name = %s, bsb = %s,  account_number= %s WHERE id = %s",
+                (updated_name, updated_lastname, updated_email, updated_phone, updated_address, updated_abn, updated_bank, updated_account_name, updated_bsb, update_account_number, user_id)
+            )
+            connection.commit()  # Commit the changes to the database
+            return True  # Indicate successful update
+
+        except Exception as e:
+            print(f"Error Updating user by id: {e}")
+            # Log the error details for debugging (optional)
+            return False  # Or raise an exception
+
+        finally:
+            if connection:
+                connection.close()
+    
 
     def check_password(self, password):
         """
@@ -106,11 +127,12 @@ class User:
         """
         return check_password_hash(self.password, password)
     
+
     @classmethod
     def get_current_user(cls):
-        user_id = session.get('user_id')
-        if user_id:
-            return cls.find_by_id(user_id)
+        email = session.get('email')
+        if email:
+            return cls.find_by_email(email)
         else:
             return None
 
@@ -251,7 +273,7 @@ class Invoice:
                         i.invoice_date, i.date_due, i.date_sent, i.date_paid, 
                         i.status, i.address as invoice_address, i.client_id, 
                         c.client_name, c.client_email, c.client_phone,
-                        u.username, u.email, u.phone as user_phone, u.abn, u.bank, u.account_name,bsb,account_number,
+                        u.name, u.email, u.phone as user_phone, u.abn, u.bank, u.account_name,bsb,account_number,
                         ii.item_name, ii.quantity, ii.date, ii.rate
                     from invoices i 
                     inner join client c 
@@ -402,6 +424,34 @@ class Invoice:
                 connection.close()
 
 
+    @classmethod
+    def delete_invoice(self, invoice_id):
+        """
+        Delete the invoice with the given data.
+
+        Args:
+            date_sent: The new date sent for the invoice.
+            status: The new status for the invoice.
+        """
+        try:
+            connection = connect_to_mysql()
+            if not connection:
+                return
+
+            cursor = connection.cursor()
+
+            cursor.execute(
+                "DELETE invoices WHERE id = %s",
+                (invoice_id)
+            )
+            connection.commit()
+        except Exception as e:
+            print(f"Error deleting invoice: {e}")
+        finally:
+            if connection:
+                connection.close()
+
+
 class Activity:
 
     def __init__(self, activity_id, invoice_id, name, hours, date, rate, address=None):
@@ -456,11 +506,6 @@ class Activity:
         """
         Finds all activities by id
 
-        Args:
-            username: The username of the user to find.
-
-        Returns:
-            The user object if found, otherwise None.
         """
         try:
             connection = connect_to_mysql()
@@ -495,15 +540,18 @@ class Activity:
 
 class Client:
 
-    def __init__(self, client_id, name, email, phone, address):
+    def __init__(self, client_id, name, lastname, company_name, email, phone, address, user_id):
         self.id = client_id
         self.name = name
+        self.lastname = lastname
+        self.company_name = company_name
         self.email = email
         self.phone = phone
         self.address = address
+        self.user_id = user_id
 
     @classmethod
-    def create(cls, name, email, phone, address):
+    def create(cls, name, lastname, company_name, email, phone, address):
         """
         Creates a new client in the database.
 
@@ -523,15 +571,16 @@ class Client:
 
             cursor = connection.cursor()
 
+            user_id = session.get('user_id')
             cursor.execute(
-                "INSERT INTO client (client_name, client_email, client_phone, client_address) VALUES (%s, %s, %s, %s)",
-                (name, email, phone, address)
+                "INSERT INTO client (client_name, client_lastname, client_company, client_email, client_phone, client_address, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                (name, lastname, company_name, email, phone, address, user_id)
             )
             connection.commit()
 
             client_id = cursor.lastrowid
             print(f" Client_id : {client_id}")
-            client = cls(client_id, name, email, phone, address)
+            client = cls(client_id, name, lastname, company_name, email, phone, address)
             return client
         except Exception as e:
             print(f"Error creating client: {e}")
@@ -542,37 +591,70 @@ class Client:
 
 
     @classmethod
-    def all(cls):
+    def get_by_user(cls):
         """
-        Finds all clients in the database.
+        Finds all clients in the database for the current user.
 
         Returns:
-            A list of all client objects.
+            A list of all client objects for the current user.
         """
         try:
+            user_id = session.get('user_id')
+            if user_id is None:
+                raise ValueError("User ID not found in session.")
+
             connection = connect_to_mysql()
             if not connection:
-                return None
+                raise ConnectionError("Could not connect to the database.")
 
             cursor = connection.cursor()
 
             cursor.execute(
-                "SELECT * FROM client"
+                "SELECT id, client_name, client_lastname, client_company, client_email, client_phone, client_address, user_id FROM client WHERE user_id = %s",
+                (user_id,)
             )
+
             results = cursor.fetchall()
 
             clients = []
             for result in results:
-                client = cls(result[0],result[1], result[2], result[3], result[4])
+                client = cls(*result)
                 clients.append(client)
-
             return clients
+
         except Exception as e:
-            print(f"Error finding all clients: {e}")
+            # Consider logging the error for better traceability
+            print(f"Error fetching clients for user {user_id}: {e}")
             return None
         finally:
             if connection:
                 connection.close()
 
 
+    @classmethod
+    def get_by_client_id(cls, client_id):
+        try:
+            connection = connect_to_mysql()
+            if not connection:
+                raise ConnectionError("Could not connect to the database.")
 
+            cursor = connection.cursor()
+            cursor.execute("""
+                SELECT id as client_id, client_name name, client_lastname as lastname, client_company as company_name, client_email as email,client_phone as phone, client_address as address FROM clients WHERE id = %s
+            """, (client_id,))
+            
+            result = cursor.fetchone()
+
+            if result:
+                user = cls(*result)
+                return user
+            else:
+                return None
+        
+        except Exception as e:
+            # Consider logging the error for better traceability
+            print(f"Error fetching clients : {e}")
+            return None
+        finally:
+            if connection:
+                connection.close()

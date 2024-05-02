@@ -1,0 +1,59 @@
+{% extends 'template.html' %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 50px;">
+    <h1>Edit Profile</h1>
+    <form method="POST">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="lastname" class="form-label">Lastname</label>
+                    <input type="text" class="form-control" id="lastname" name="lastname" value="{{ user.lastname }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ user.phone }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="address" name="address" value="{{ user.address }}" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="abn" class="form-label">ABN</label>
+                    <input type="text" class="form-control" id="abn" name="abn" value="{{ user.abn }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="bank" class="form-label">Bank</label>
+                    <input type="text" class="form-control" id="bank" name="bank" value="{{ user.bank }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="account_name" class="form-label">Account Name</label>
+                    <input type="text" class="form-control" id="account_name" name="account_name" value="{{ user.account_name }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="bsb" class="form-label">BSB</label>
+                    <input type="text" class="form-control" id="bsb" name="bsb" value="{{ user.bsb }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="account_number" class="form-label">Account Number</label>
+                    <input type="text" class="form-control" id="account_number" name="account_number" value="{{ user.acc }}" required>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+    </form>
+</div>
+{% endblock %}
+

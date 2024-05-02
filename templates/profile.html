@@ -1,0 +1,26 @@
+{% extends 'template.html' %}
+
+{% block title %}Invoice{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 100px;">
+    <h1>User Data</h1>
+    <p>Here is your user data:</p>
+    <ul>
+        <li>Name: {{ user.name }}</li>
+        <li>Lastname: {{ user.lastname }}</li>
+        <li>Email: {{ user.email }}</li>
+        <li>Phone: {{ user.phone }}</li>
+        <li>Address: {{ user.address }}</li>
+        <li>ABN: {{ user.abn }}</li>
+        <li>Bank: {{ user.bank }}</li>
+        <li>Account Name: {{ user.account_name }}</li>
+        <li>BSB: {{ user.bsb }}</li>
+        <li>Account Number: {{ user.account_number }}</li>
+    </ul>
+    {% if user %}
+    <a href='/edit_profile' class="btn btn-primary">Edit Profile</a>
+    {% endif %}
+    <a href='/dashboard' class="btn btn-primary">Dashboard</a>
+</div>
+{% endblock %}

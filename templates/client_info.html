@@ -1,0 +1,39 @@
+{% extends 'template.html' %}
+
+{% block title %}Invoice{% endblock %}
+
+{% block content %}
+
+<h1>Client Information</h1>
+
+    <!-- Display client information -->
+    <h2>Client Details</h2>
+    <p>Name: {{ cliente.client_name }}</p>
+    <p>Email: {{ cliente.client_email }}</p>
+    <p>Phone: {{ cliente.client_phone }}</p>
+    <p>Address: {{ cliente.client_address }}</p>
+
+    <!-- Display invoices associated with the client -->
+    <h2>Associated Invoices</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Invoice Number</th>
+                <th>Invoice Date</th>
+                <th>Due Date</th>
+                <!-- Add more columns if needed -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+            <tr>
+                <td>{{ invoice.invoice_number }}</td>
+                <td>{{ invoice.invoice_date }}</td>
+                <td>{{ invoice.date_due }}</td>
+                <!-- Add more columns if needed -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

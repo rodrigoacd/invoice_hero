@@ -3,142 +3,63 @@
 {% block title %}login{% endblock %}
 
 {% block content %}
-
-<body>
-    <!-- Nav bar start -->
-    <nav class="navbar bg-body-tertiary fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Invoice Hero</a>
-
-            <!-- Login and register dropdown -->
-            <div class="dropdown text-end d-flex justify-content-between align-items-center">
-                <button class="btn btn-link link-body-emphasis" type="button">Register</button>
-                <button class="btn btn-primary dropdown-toggle" type="button" id="profileDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                    Login
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdownMenu">
-                    <form class="px-4 py-3">
-                        <div class="mb-3">
-                            <label for="DropdownFormEmail1" class="form-label">Email address</label>
-                            <input type="text" class="form-control" name="username" id="username" placeholder="email@example.com">
-                        </div>
-                        <div class="mb-3">
-                            <label for="DropdownFormPassword1" class="form-label">Password</label>
-                            <input type="password" class="form-control" name="password" id="username" placeholder="Password">
-                        </div>
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="dropdownCheck">
-                                <label class="form-check-label" for="dropdownCheck">
-                                    Remember me
-                                </label>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary" value="Log In">Sign in</button>
-                    </form>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">New around here? Sign up</a>
-                    <a class="dropdown-item" href="#">Forgot password?</a>
-                </ul>
-            </div>
-        </div>
-    </nav>
+ 
     <!-- Registration -->
     <div class="container mt-5">
         <main class="form-signin">
             <h1 class="p-4 text-center" style="color:rgb(6, 45, 221);">Invoice Hero</h1>
-            <form action="/login" method="POST">
+            <form action="/signup" method="POST">
 
                 <h2 class="mb-3 fw-normal">Register</h2>
 
-                <div class="row g-0">
-                    <!-- Left side -->
-                    <div class="col-12 col-md-6">
-                        <div class="card border-light-subtle shadow-sm">
-                            <div class="card-body p-3 p-md-4 p-xl-5">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="mb-5">
-                                            <h2 class="h4 text-center">User account</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row gy-3 overflow-hidden">
-                                    <div class="col-12">
-                                        <div class="form-floating mb-3">
-                                            <input type="text" class="form-control" name="username" id="username" placeholder="Username" required>
-                                            <label for="username" class="form-label">Username</label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
-                                            <label for="password">Password</label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input type="password" class="form-control" name="Re-password" id="Re-password" placeholder="Re-password" required>
-                                            <label for="Re-password" class="form-label">Re-password</label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input type="email" class="form-control" name="email" id="email" placeholder="Email" required>
-                                            <label for="email" class="form-label">Email</label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input type="email" class="form-control" name="re-email" id="re-email" placeholder="Re-email" required>
-                                            <label for="re-email" class="form-label">Re-email</label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input type="tel" class="form-control" name="phone" id="phone" placeholder="Phone" pattern="^(\(0[1-9]\)|0[1-9])[0-9]{8}$" required>
-                                            <label for="phone" class="form-label">Phone</label>
-                                        </div>
-                                        <br>
-                                    </div>
+                <div class="card border-light-subtle shadow-sm">
+                    <div class="card-body p-3 p-md-4 p-xl-5">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-5">
+                                    <h2 class="h4 text-center">User account</h2>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- Right side -->
-                    <div class="col-12 col-md-6">
-                        <div class="card border-light-subtle shadow-sm">
-                            <div class="card-body p-3 p-md-4 p-xl-5">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="mb-5">
-                                            <h2 class="h4 text-center">User Bank Information</h2>
-                                        </div>
-                                    </div>
+                        <div class="row gy-3 overflow-hidden">
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="name" id="name" placeholder="Name" required>
+                                    <label for="name" class="form-label">Name</label>
                                 </div>
-                                <div class="row gy-3 overflow-hidden">
-                                    <div class="col-12">
-                                        <div class="form-floating mb-3">
-                                            <input type="number" class="form-control" name="abn" id="abn" placeholder="ABN" required>
-                                            <label for="abn" class="form-label">ABN</label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input type="text" class="form-control" name="bank" id="bank" placeholder="Bank" required>
-                                            <label for="bank" class="form-label">Bank</label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input type="text" class="form-control" name="account_name" id="account_name" placeholder="Account Name" required>
-                                            <label for="account_name" class="form-label">Account Name</label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input type="number" class="form-control" name="bsb" id="bsb" placeholder="BSB" required>
-                                            <label for="bsb" class="form-label">BSB</label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input type="number" class="form-control" name="account_number" id="account_number" placeholder="Account Number" required>
-                                            <label for="account_number" class="form-label">Account Number</label>
-                                        </div>
-                                        <button class="btn btn-primary w-100 py-2" type="submit" value="Sign Up">Sign up</button>
-                                        <p class="mb-0 mt-1 text-secondary text-center"> Already have an<a href="#!" class="link-primary text-decoration-none"> account?</a></p>
-                                    </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="lastname" id="lastname" placeholder="Lastname" required>
+                                    <label for="lastname" class="form-label">Lastname</label>
                                 </div>
+                                <div class="form-floating mb-3">
+                                    <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                                    <label for="password">Password</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="password" class="form-control" name="Re-password" id="Re-password" placeholder="Re-password" required>
+                                    <label for="Re-password" class="form-label">Re-password</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" name="email" id="email" placeholder="Email" required>
+                                    <label for="email" class="form-label">Email</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" name="re-email" id="re-email" placeholder="Re-email" required>
+                                    <label for="re-email" class="form-label">Re-email</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="tel" class="form-control" name="phone" id="phone" placeholder="Phone" pattern="^(\(0[1-9]\)|0[1-9])[0-9]{8}$" required>
+                                    <label for="phone" class="form-label">Phone</label>
+                                </div>
+                                <button class="btn btn-primary w-100 py-2" type="submit" value="Sign Up">Sign up</button>
+                                <br>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <p class="mt-2 mb-3 text-body-secondary"> &copy; Invoice Hero 2024</p>
             </form>
         </main>
     </div>   
-    {% endblock %}
-
+{% endblock %}

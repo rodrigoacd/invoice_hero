@@ -4,46 +4,8 @@
 
 {% block content %}
 
-<body>
-    <!-- Nav bar start -->
-    <nav class="navbar bg-body-tertiary fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Invoice Hero</a>
 
-            <!-- Login and register dropdown -->
-            <div class="dropdown text-end d-flex justify-content-between align-items-center">
-                <button class="btn btn-link link-body-emphasis" type="button">Register</button>
-                <button class="btn btn-primary dropdown-toggle" type="button" id="profileDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                    Login
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdownMenu">
-                    <form class="px-4 py-3">
-                        <div class="mb-3">
-                            <label for="DropdownFormEmail1" class="form-label">Email address</label>
-                            <input type="text" class="form-control" name="username" id="username" placeholder="email@example.com">
-                        </div>
-                        <div class="mb-3">
-                            <label for="DropdownFormPassword1" class="form-label">Password</label>
-                            <input type="password" class="form-control" name="password" id="username" placeholder="Password">
-                        </div>
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="dropdownCheck">
-                                <label class="form-check-label" for="dropdownCheck">
-                                    Remember me
-                                </label>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary" value="Log In">Sign in</button>
-                    </form>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">New around here? Sign up</a>
-                    <a class="dropdown-item" href="#">Forgot password?</a>
-                </ul>
-                
-            </div>
-        </div>
-    </nav>
+
 
 <div class="container">
     <main class="form-signin">
@@ -53,8 +15,8 @@
             <h2 class="mb-3 fw-normal">Please Sign In</h2>
 
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" name="username" id="username" placeholder="Email" required>
-                <label for="username">Email address</label>
+                <input type="text" class="form-control" name="email" id="email" placeholder="Email" required>
+                <label for="email">Email address</label>
             </div>
             <div class="form-floating">
                 <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>

@@ -100,8 +100,18 @@
                             <input type="text" class="form-control" name="name" required>
                         </div>
                         <div class="mb-3">
+                            <label for="lastname" class="col-form-label">Lastname:</label>
+                            <input type="text" class="form-control" name="lastname" >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="company_name" class="col-form-label">Company Name:</label>
+                            <input type="text" class="form-control" name="company_name" required>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="email" class="col-form-label">Email:</label>
-                            <input type="text" class="form-control" name="email">
+                            <input type="text" class="form-control" name="email" required>
                         </div>
                         <div class="mb-3">
                             <label for="phone" class="col-form-label">Phone</label>
@@ -162,29 +172,15 @@
                                     </script>
                                 </td>
                                 <td>
-                                    <!-- Button including loading animation -->
-                                    <span id="sentLoadingIndicator" style="display: none;">
-                                        <div class="spinner-border text-success" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                    </span>
-                                    <a href="/invoices/{{ invoice.invoice_id }}/sent" class="btn btn-outline-success" onclick="showSentLoadingIndicator()">Sent</a>
+
+                                    <a href="/send_invoices/{{ invoice.id }}" class="btn btn-outline-success" onclick="showSentLoadingIndicator()">Send</a>
                                 </td>
                                 <td>
-                                    <span id="downloadLoadingIndicator" style="display: none;">
-                                        <div class="spinner-border text-primary" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                    </span>
-                                    <a href="/print_invoices/{{ invoice.invoice_id }}" class="btn btn-outline-primary" onclick="showDownloadLoadingIndicator()">Download</a>
+
+                                    <a href="/print_invoices/{{ invoice.id }}" class="btn btn-outline-primary" onclick="showDownloadLoadingIndicator()">Download</a>
                                 </td>
                                 <td>
-                                    <span id="deleteLoadingIndicator" style="display: none;">
-                                        <div class="spinner-border text-danger" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                    </span>
-                                    <a href="/delete" class="btn btn-outline-danger" onclick="showDeleteLoadingIndicator()">Delete</a>
+                                    <a href="/delete_invoices/{{ invoice.id }}" class="btn btn-outline-danger" onclick="showDeleteLoadingIndicator()">Delete</a>
                                 </td>
                             </tr>
                             <div class="invisible">{% endfor %}</div>
