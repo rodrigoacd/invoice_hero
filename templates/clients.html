@@ -11,10 +11,12 @@
                 <tr>
                     <th>Name</th>
                     <th>Lastname</th>
+
                     <th>Company</th>
                     <th>Email</th>
                     <th>Phone</th>
                     <th>Address</th>
+                    <th>Edit</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,6 +28,9 @@
                     <td>{{ client.email }}</td>
                     <td>{{ client.phone }}</td>
                     <td>{{ client.address }}</td>
+                    <td>
+                        <a href="/edit_client/{{ client.id }}" class="btn btn-outline-success" onclick="showSentLoadingIndicator()">Edit</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

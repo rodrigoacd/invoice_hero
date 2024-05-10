@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS invoice_items (
             FOREIGN KEY (invoice_id) REFERENCES invoices (id)
         );
 
+```SQL
 CREATE TABLE IF NOT EXISTS client (
             id INT AUTO_INCREMENT PRIMARY KEY,
             client_name VARCHAR(255) NOT NULL,
@@ -75,7 +76,7 @@ CREATE TABLE IF NOT EXISTS client (
             client_phone VARCHAR(20) NOT NULL,
             client_address VARCHAR(255) NOT NULL
     );
-
+```
 
 
 insert into client (client_name, client_email, client_phone, client_address)values ("mrdata", "mrdata@gmail.com", 987654321, "222 Harry st, Ultimo");

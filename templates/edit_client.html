@@ -1,0 +1,43 @@
+{% extends 'template.html' %}
+
+{% block title %}Edit Client{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 50px;">
+    <h1>Edit Client</h1>
+    <form method="POST">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ client.name }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="lastname" class="form-label">Lastname</label>
+                    <input type="text" class="form-control" id="lastname" name="lastname" value="{{ client.lastname }}">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ client.email }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ client.phone }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="address" name="address" value="{{ client.address }}" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="company_name" class="form-label">Company</label>
+                    <input type="text" class="form-control" id="company_name" name="company_name" value="{{ client.company_name }}">
+                </div>
+
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Client</button>
+    </form>
+</div>
+{% endblock %}

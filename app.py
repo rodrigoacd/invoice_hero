@@ -208,6 +208,17 @@ def invoice_details(invoice_id):
         item_data = Activity.find_by_invoice(invoice_id)
         return render_template('invoice_details.html', invoice_data=invoice_data, item_data=item_data)
 
+@app.route('/invoice_status', methods=['POST'])
+def invoice_status():
+    if request.method == 'POST':
+        invoice_id = request.form['invoice_id']
+        status = request.form['status']
+        print(invoice_id, status)
+        
+        Invoice.Update_status(invoice_id, status)
+
+
+        return redirect(url_for('dashboard'))
 
 
 @app.route('/print_invoices/<int:invoice_id>')
@@ -232,9 +243,9 @@ def send_invoice(invoice_id):
     subject = f"Invoice number: { invoice_data['invoice_number'] }"
     text = f"Invoice Attached from { invoice_data['name'] }"
 
-    response = send_email( invoice_data['client_email'], invoice_data['client_name'], subject, text, pdf_bytes)
+    send_email( invoice_data['client_email'], invoice_data['client_name'], subject, text, pdf_bytes)
 
-    return response
+    return redirect(url_for('dashboard'))
 
 
 
@@ -272,14 +283,6 @@ def send_invoice_email(invoice_id):
     return jsonify({'message': 'Email sent successfully'})
 
 
-@app.route('/client/<int:client_id>')
-def show_client(client_id):
-    if request.method == 'GET':
-    
-        client = Client.get_by_client_id(client_id)
-        invoices = Invoice.all_invoice_info_by_id(client_id)
-
-        return render_template('mostrar_cliente.html', client=client, invoices=invoices)
 
 @app.route('/client')
 def clients():
@@ -291,6 +294,32 @@ def clients():
         return render_template('clients.html', clients=clients)
 
 
+
+@app.route('/edit_client/<int:client_id>', methods=['GET', 'POST'])
+def show_client(client_id):
+    if request.method == 'GET':
+    
+        client = Client.get_by_client_id(client_id)
+
+        return render_template('edit_client.html', client=client )
+    
+    if request.method == 'POST':
+        client_name = request.form['name']
+        client_lastname = request.form['lastname']
+        client_email = request.form['email']
+        client_phone = request.form['phone']
+        client_address = request.form['address']   
+        client_company = request.form['company_name']
+
+        client = Client.update(client_id, client_name , client_email ,client_phone ,client_address  ,client_lastname ,client_company)
+
+        if client:
+            flash('Client updated successfully')
+            return redirect(url_for('client'))
+        else:
+            flash('Error updating client')
+
+        return redirect(url_for('dashboard'))
 
 
 if __name__ == '__main__':

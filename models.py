@@ -396,7 +396,31 @@ class Invoice:
                 connection.close()
 
 
+    def Update_status(invoice_id, status):
+        """
+        Updates the invoice with the given data.
 
+        Args:
+            date_sent: The new date sent for the invoice.
+            status: The new status for the invoice.
+        """
+        try:
+            connection = connect_to_mysql()
+            if not connection:
+                return
+
+            cursor = connection.cursor()
+
+            cursor.execute(
+                "UPDATE invoices SET status = %s WHERE id = %s",
+                (status, invoice_id,)
+            )
+            connection.commit()
+        except Exception as e:
+            print(f"Error updating invoice: {e}")
+        finally:
+            if connection:
+                connection.close()
     def update(self, date_sent, status):
         """
         Updates the invoice with the given data.
@@ -441,7 +465,7 @@ class Invoice:
             cursor = connection.cursor()
 
             cursor.execute(
-                "DELETE invoices WHERE id = %s",
+                "DELETE FROM invoices WHERE id = %s",
                 (invoice_id)
             )
             connection.commit()
@@ -615,7 +639,6 @@ class Client:
             )
 
             results = cursor.fetchall()
-
             clients = []
             for result in results:
                 client = cls(*result)
@@ -630,6 +653,7 @@ class Client:
             if connection:
                 connection.close()
 
+ 
 
     @classmethod
     def get_by_client_id(cls, client_id):
@@ -639,10 +663,11 @@ class Client:
                 raise ConnectionError("Could not connect to the database.")
 
             cursor = connection.cursor()
-            cursor.execute("""
-                SELECT id as client_id, client_name name, client_lastname as lastname, client_company as company_name, client_email as email,client_phone as phone, client_address as address FROM clients WHERE id = %s
-            """, (client_id,))
-            
+            cursor.execute(
+                "SELECT id as client_id, client_name name, client_lastname as lastname, client_company as company_name, client_email as email,client_phone as phone, client_address as address, user_id FROM client WHERE id = %s ", 
+                (client_id,)
+            )
+
             result = cursor.fetchone()
 
             if result:
@@ -655,6 +680,32 @@ class Client:
             # Consider logging the error for better traceability
             print(f"Error fetching clients : {e}")
             return None
+        finally:
+            if connection:
+                connection.close()
+
+    def update(client_id, client_name , client_email ,client_phone ,client_address  ,client_lastname ,client_company):
+        """
+        Updates the invoice with the given data.
+
+        Args:
+            date_sent: The new date sent for the invoice.
+            status: The new status for the invoice.
+        """
+        try:
+            connection = connect_to_mysql()
+            if not connection:
+                return
+
+            cursor = connection.cursor()
+
+            cursor.execute(
+                "UPDATE client SET client_name = %s, client_email = %s ,client_phone = %s ,client_address = %s ,client_lastname = %s ,client_company = %s WHERE id = %s",
+                (client_name , client_email ,client_phone ,client_address  ,client_lastname ,client_company,client_id, )
+            )
+            connection.commit()
+        except Exception as e:
+            print(f"Error updating invoice: {e}")
         finally:
             if connection:
                 connection.close()
